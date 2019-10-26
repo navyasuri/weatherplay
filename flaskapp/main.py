@@ -6,7 +6,7 @@ import dicttoxml
 
 app = Flask(__name__)
 
-spotipy = spotipy.Spotipy()
+spotipy = None
 
 positionData = {}
 
@@ -26,6 +26,8 @@ def show_another():
 
     # get the spotify auth related tokens
     access_token = tokens['access_token']
+    spotipy = spotipy.Spotipy(auth=access_token)
+    username = spotipy.me()
 
     # use location data to make the weather api call
     keywords = get_weather_keyword(42.3601, -71.0589)
@@ -56,7 +58,7 @@ def get_weather_keyword(lat, lon):
       "summary": res.currently.summary, # String
       "cloudCover": res.currently.cloudCover, # Float
       "windSpeed": res.currently.windSpeed, # Float
-      "temperature": res.currently.temperature # Float
+      "temperature": res.currently.temperature, # Float
       "precipIntensity": res.currently.precipIntensity # Float
     }
     print(res.json())
