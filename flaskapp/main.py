@@ -5,6 +5,8 @@ import secret
 
 app = Flask(__name__)
 
+positionData = {}
+
 @app.route('/')
 def show_page(): 
     return render_template("index.html") 
@@ -45,3 +47,9 @@ def get_weather_keyword(lat, lon):
     # print(res.json)
     summary = ""
     return summary
+
+@app.route('/getLocation', methods = ['POST'])
+def getLocationData():
+  res = request.json
+  print(res)
+  return res
