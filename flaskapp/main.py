@@ -6,7 +6,7 @@ import dicttoxml
 
 app = Flask(__name__)
 
-spotipy = None
+spot = None
 
 positionData = {}
 
@@ -16,6 +16,7 @@ def show_page():
 
 @app.route('/logged')
 def show_another():
+    global spot
     # get the auth portion of url
     code = request.args['code']
     print("spotify code", code)
@@ -26,8 +27,8 @@ def show_another():
 
     # get the spotify auth related tokens
     access_token = tokens['access_token']
-    spotipy = spotipy.Spotipy(auth=access_token)
-    username = spotipy.me()
+    spot = spotipy.Spotify(auth=access_token)
+    username = spot.me()
 
     # use location data to make the weather api call
     keywords = get_weather_keyword(42.3601, -71.0589)
