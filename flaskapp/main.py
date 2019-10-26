@@ -2,6 +2,7 @@ from flask import Flask, request, render_template, url_for
 import os, json, requests, spotipy
 import flaskapp.secret as secret
 # import utils.(filename)
+import dicttoxml
 
 app = Flask(__name__)
 
@@ -27,7 +28,7 @@ def show_another():
     access_token = tokens['access_token']
 
     # use location data to make the weather api call
-    # keywords = get_weather_keyword(lat, lon)
+    keywords = get_weather_keyword(42.3601, -71.0589)
 
     # use weather data to create a spotify playlist
 
@@ -48,16 +49,20 @@ def get_spotify_token(code):
     return resjson
 
 def get_weather_keyword(lat, lon):
-    pass
-    url = ""
-    params = {"lat": "", "lon": ""}
-    # res = requests.get(url, params=params)
-    # print(res.json)
-    summary = ""
-    return summary
+    url = "https://api.darksky.net/forecast/f8e4346a41cff3c66e447fd9bc38c543/42.3601,-71.0589"
+    res = requests.get(url)
+    keywords = {
+      "timezone": res.timezone, # String
+      "summary": res.currently.summary, # String
+      "cloudCover": res.currently.cloudCover, # Float
+      "windSpeed": res.currently.windSpeed, # Float
+      "temperature": res.currently.temperature # Float
+      "precipIntensity": res.currently.precipIntensity # Float
+    }
+    print(res.json())
+    return keywords
 
-@app.route('/getLocation', methods = ['POST'])
-def getLocationData():
-  res = request.json
-  print(res)
-  return res
+def playBose(id):
+    url = "http://192.168.1.157:8090/"
+    info = requests.get(url + "info")
+    print(info)
