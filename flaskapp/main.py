@@ -1,9 +1,11 @@
 from flask import Flask, request, render_template, url_for
-import os, json, requests
+import os, json, requests, spotipy
 import flaskapp.secret as secret
 # import utils.(filename)
 
 app = Flask(__name__)
+
+spotipy = spotipy.Spotipy()
 
 positionData = {}
 
@@ -28,6 +30,7 @@ def show_another():
     # keywords = get_weather_keyword(lat, lon)
 
     # use weather data to create a spotify playlist
+
     
     # store the id of the playlist. use the playlist id to play on speaker
     playlist_id = ""
