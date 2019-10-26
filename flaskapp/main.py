@@ -36,13 +36,13 @@ def show_another():
 
 def get_spotify_token(code):
     url = "https://accounts.spotify.com/api/token"
-    payload = {"grant_type": "authorization_code", "code": code, "redirect_uri":"localhost:5000/logged", 
+    payload = {"grant_type": "authorization_code", "code": code, "redirect_uri":"http://localhost:5000/logged", 
         "client_id": secret.CLIENT, 
         "client_secret": secret.CLIENT_SECRET}
     res = requests.post(url, data=payload)
     resjson = res.json()
     print("RESPONSE FOR TOKEN REQUEST", resjson)
-    return json.loads(resjson)
+    return resjson
 
 def get_weather_keyword(lat, lon):
     pass
