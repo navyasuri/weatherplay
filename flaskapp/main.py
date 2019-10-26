@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, url_for
-import os, json
-import secret
+import os, json, requests
+import flaskapp.secret as secret
 # import utils.(filename)
 
 app = Flask(__name__)
@@ -14,9 +14,12 @@ def show_page():
 @app.route('/logged')
 def show_another():
     # get the auth portion of url
+    code = request.args['code']
+    print("spotify code", code)
 
     # make a post to spotify auth
     tokens = get_spotify_token(code)
+
 
     # get the spotify auth related tokens
     access_token = tokens['access_token']
@@ -33,11 +36,13 @@ def show_another():
 
 def get_spotify_token(code):
     url = "https://accounts.spotify.com/api/token"
-    headers = {"Authorization": secret.BASE64}
-    payload = {"grant_type": "authorization_code", "code": code, "redirect_uri":"localhost:5000/logged"}
+    payload = {"grant_type": "authorization_code", "code": code, "redirect_uri":"localhost:5000/logged", 
+        "client_id": secret.CLIENT, 
+        "client_secret": secret.CLIENT_SECRET}
     res = requests.post(url, data=payload)
-    print("RESPONSE FOR TOKEN REQUEST", res.json())
-    return json.l
+    resjson = res.json()
+    print("RESPONSE FOR TOKEN REQUEST", resjson)
+    return json.loads(resjson)
 
 def get_weather_keyword(lat, lon):
     pass

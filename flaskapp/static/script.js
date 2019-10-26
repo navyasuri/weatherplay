@@ -6,7 +6,7 @@ function spotify_redirect(){
 }
     console.log("Script loaded")
 
-    const baseURL = 'http://localhost:5000/';
+    const baseURL = 'http://localhost:5000/logged?lat=1&lon=2';
 
 
     function sendGeolocationData(data) {
