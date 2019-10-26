@@ -6,9 +6,8 @@ app = Flask(__name__)
 
 @app.route('/')
 def show_page(): 
-    # return render_template("index.html") 
+    return render_template("index.html") 
 
-    return "hello"
 @app.route('/other')
 def show_another():
     # get the auth portion of url
