@@ -1,0 +1,3 @@
+CLIENT = ""
+CLIENT_SECRET = ""
+BASE64 = ""
