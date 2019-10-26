@@ -54,15 +54,16 @@ def get_spotify_token(code):
 def get_weather_keyword(lat, lon):
     url = "https://api.darksky.net/forecast/f8e4346a41cff3c66e447fd9bc38c543/42.3601,-71.0589"
     res = requests.get(url)
+    resData = res.json()
     keywords = {
-      "timezone": res.timezone, # String
-      "summary": res.currently.summary, # String
-      "cloudCover": res.currently.cloudCover, # Float
-      "windSpeed": res.currently.windSpeed, # Float
-      "temperature": res.currently.temperature, # Float
-      "precipIntensity": res.currently.precipIntensity # Float
+      "timezone": resData['timezone'], # String
+      "summary": resData['currently']['summary'], # String
+      "cloudCover": resData['currently']['cloudCover'], # Float
+      "windSpeed": resData['currently']['windSpeed'], # Float
+      "temperature": resData['currently']['temperature'], # Float
+      "precipIntensity": resData['currently']['precipIntensity'] # Float
     }
-    print(res.json())
+    print(keywords)
     return keywords
 
 def playBose(id):
