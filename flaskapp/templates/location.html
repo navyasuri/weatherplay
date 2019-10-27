@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Webpage Title</title>
+    <!-- NOTE below the formats for using static files like css or a script(js) file -->
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <div class="main">
+        <div class="main__container">
+            <p class="main__title">Listen to the Weather</p>
+        </div>
+        <button class="main__login" onclick="spotify_redirect()">Login to Spotify</button>
+        <div class="cloud-container">
+          <div class="cloud"></div>
+          <div class="cloud"></div>
+          <div class="cloud"></div>
+          <div class="cloud"></div>
+        </div>
+        <img src="{{url_for('static', filename='logo.png')}}" alt="logo" class="main__logo">
+    </div>
+    <script
+    src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+    crossorigin="anonymous"></script>
+    <script src="{{url_for('static', filename='locationscript.js')}}"></script>
+</body>
+</html>

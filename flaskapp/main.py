@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, url_for, redirect
+from flask import Flask, request, render_template, url_for, redirect, session
 import os, json, requests, spotipy, pprint
 import flaskapp.secret as secret
 from operator import attrgetter
@@ -8,6 +8,7 @@ import dicttoxml, pyrebase
 pp = pprint.PrettyPrinter()
 
 app = Flask(__name__)
+app.secret_key = secret.FLASK_SECRET
 
 spot = None
 
@@ -37,30 +38,91 @@ def show_another():
 
     # get the spotify auth related tokens
     access_token = tokens['access_token']
+    session['token']=access_token
     spot = spotipy.Spotify(auth=access_token)
     user = spot.me()
     pp.pprint(user)
     username = user['id']
 
+    db.child("user").set({"me": user})
+    session["user"] = username
+
+    print(session)
+
+    return render_template("location.html")
+
+    # # use location data to make the weather api call
+    # mapwords = get_weather_keyword(42.3601, -71.0589)
+
+    # playlist_name = user['display_name'].split()[0]+"'s weather playlist"
+    # userplay = spot.current_user_playlists()
+    # exister = None
+    # for d in userplay['items']:
+    #     if d['name']==playlist_name:
+    #         exister = d['id']
+    #         break
+    # if exister:
+    #     print("exists")
+    #     spot.user_playlist_unfollow(username, exister)
+
+    # # use weather data to create a spotify playlist
+    # playlist = spot.user_playlist_create(username, 
+    #     playlist_name, 
+    #     public=False)
+
+    # genres = ['pop', 'hip-hop', 'edm', 'rock', 'alternative']
+    # rec_params = {
+    #     "target_tempo": mapwords["cloudCover"],  
+    #     "target_valence": mapwords["visibility"],  
+    #     "target_energy": mapwords["temperature"],  
+    #     "target_danceability": mapwords["windSpeed"],  
+    #     "target_instrumentalness": mapwords["precipProbability"], 
+    #     "seed_genres": ",".join(genres), 
+    #     "limit": 20
+    # }
+
+    # header= {"Authorization": "Bearer "+str(access_token)}
+    # url = "https://api.spotify.com/v1/recommendations"
+    # res = requests.get(url, headers=header, params=rec_params)
+    # resTracks = res.json()
+    
+    # tracks = [d['id'] for d in resTracks['tracks']]
+    # print(tracks)
+
+    # playlist_id = playlist['id']
+
+    # pp.pprint(playlist)
+    # # tracks = []
+    # spot.user_playlist_add_tracks(username, playlist_id, tracks)
+
+    # # store the id of the playlist. use the playlist id to play on speaker
+    # # playPlaylistOnBose(playlist_id)
+    # url = "http://192.168.1.157:8090/select"
+    # payloadLeft = '<ContentItem source="SPOTIFY" type="uri" location="spotify:playlist:'
+    # payloadRight = '" sourceAccount="nav_suri" isPresetable="true"></ContentItem>'
+    # payload = payloadLeft + playlist_id + payloadRight
+    # try:
+    #   res = requests.post(url, data=payload, timeout=3)
+    # except requests.exceptions.Timeout:
+    #   return redirect("https://open.spotify.com/playlist/" + playlist_id)
+
+    # return "Hello"
+
+@app.route('/location')
+def getLocation():
+    lat = float(request.args.get("lat"))
+    lon = float(request.args.get("lon"))
+    session["lat"] = lat
+    session["lon"] = lon
+    # Display a page that asks for user location -> once received, redirect to /play
+    return redirect(url_for("play"))
+
+@app.route('/play')
+def play():
     # use location data to make the weather api call
-    mapwords = get_weather_keyword(42.3601, -71.0589)
-
-    playlist_name = user['display_name'].split()[0]+"'s weather playlist"
-    userplay = spot.current_user_playlists()
-    exister = None
-    for d in userplay['items']:
-        if d['name']==playlist_name:
-            exister = d['id']
-            break
-    if exister:
-        print("exists")
-        spot.user_playlist_unfollow(username, exister)
-
-    # use weather data to create a spotify playlist
-    playlist = spot.user_playlist_create(username, 
-        playlist_name, 
-        public=False)
-
+    global spot
+    user = spot.me()
+    mapwords = get_weather_keyword(session["lat"], session["lon"])
     genres = ['pop', 'hip-hop', 'edm', 'rock', 'alternative']
     rec_params = {
         "target_tempo": mapwords["cloudCover"],  
@@ -71,8 +133,26 @@ def show_another():
         "seed_genres": ",".join(genres), 
         "limit": 20
     }
+    pp.pprint(mapwords)
+    pp.pprint(rec_params)
 
-    header= {"Authorization": "Bearer "+str(access_token)}
+    playlist_name = user['display_name'].split()[0]+"'s weather playlist"
+    userplay = spot.current_user_playlists()
+    exister = None
+    for d in userplay['items']:
+        if d['name']==playlist_name:
+            exister = d['id']
+            break
+    if exister:
+        print("exists")
+        spot.user_playlist_unfollow(user['id'], exister)
+
+    # use weather data to create a spotify playlist
+    playlist = spot.user_playlist_create(user['id'], 
+        playlist_name, 
+        public=False)
+
+    header= {"Authorization": "Bearer "+str(session['token'])}
     url = "https://api.spotify.com/v1/recommendations"
     res = requests.get(url, headers=header, params=rec_params)
     resTracks = res.json()
@@ -84,7 +164,7 @@ def show_another():
 
     pp.pprint(playlist)
     # tracks = []
-    spot.user_playlist_add_tracks(username, playlist_id, tracks)
+    spot.user_playlist_add_tracks(user['id'], playlist_id, tracks)
 
     # store the id of the playlist. use the playlist id to play on speaker
     # playPlaylistOnBose(playlist_id)
@@ -93,19 +173,11 @@ def show_another():
     payloadRight = '" sourceAccount="nav_suri" isPresetable="true"></ContentItem>'
     payload = payloadLeft + playlist_id + payloadRight
     try:
-      res = requests.post(url, data=payload, timeout=3)
+        res = requests.post(url, data=payload, timeout=3)
     except requests.exceptions.Timeout:
-      return redirect("https://open.spotify.com/playlist/" + playlist_id)
+        return redirect("https://open.spotify.com/playlist/" + playlist_id)
 
-    return "Hello"
 
-@app.route('/location')
-def getLocation():
-    # Display a page that asks for user location -> once received, redirect to /play
-    return "Good"
-
-@app.route('/play')
-def play():
     # Use soundtouch API to play the playlist*
     return "Play"
 

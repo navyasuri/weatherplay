@@ -3,33 +3,33 @@ function spotify_redirect(){
     window.location.replace(url)
 }
 
-$( document ).ready(function() {
-    console.log("Script loaded")
+// $( document ).ready(function() {
+//     console.log("Script loaded")
 
-    const baseURL = 'http://localhost:5000/';
+//     const baseURL = 'http://localhost:5000/';
 
 
-    function sendGeolocationData(data) {
-        $.post(
-            baseURL + 'getLocation',
-            { payload: data },
-            function (data) {
-                console.log(data);
-            }
-        );
-    }
+//     function sendGeolocationData(data) {
+//         $.post(
+//             baseURL + 'getLocation',
+//             { payload: data },
+//             function (data) {
+//                 console.log(data);
+//             }
+//         );
+//     }
 
-    function getGeolocationData() {
-        navigator.geolocation.getCurrentPosition(response => {
-            // response.coords.latitude
-            // response.coords.longitude
-            const gpsData = {
-                lat: response.coords.latitude,
-                lon: response.coords.longitude
-            }
-            sendGeolocationData(gpsData);
-        }, error => {
-            console.error("Error getting geolocation data.")
-        })
-    }
-})
+//     function getGeolocationData() {
+//         navigator.geolocation.getCurrentPosition(response => {
+//             // response.coords.latitude
+//             // response.coords.longitude
+//             const gpsData = {
+//                 lat: response.coords.latitude,
+//                 lon: response.coords.longitude
+//             }
+//             sendGeolocationData(gpsData);
+//         }, error => {
+//             console.error("Error getting geolocation data.")
+//         })
+//     }
+// })
