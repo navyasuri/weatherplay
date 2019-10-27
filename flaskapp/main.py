@@ -3,7 +3,7 @@ import os, json, requests, spotipy, pprint
 import flaskapp.secret as secret
 from operator import attrgetter
 # import utils.(filename)
-import dicttoxml, pyrebase
+import dicttoxml, pyrebase, xmltodict
 
 pp = pprint.PrettyPrinter()
 
@@ -23,6 +23,7 @@ def show_page():
     print(db)
     db.child("login").set({"value":"true"})
 
+    sendNotificationToBose("Hello!")
     return render_template("index.html") 
 
 @app.route('/logged')
@@ -107,7 +108,10 @@ def getLocation():
 @app.route('/play')
 def play():
     # Use soundtouch API to play the playlist*
-    return "Play"
+    boseInfo = getBoseInfo()
+    playingInfo = getPlayingInfo()
+    
+    return render_template("play.html", boseInfo=boseInfo, playingInfo=playingInfo) 
 
 def get_spotify_token(code):
     url = "https://accounts.spotify.com/api/token"
@@ -144,21 +148,43 @@ def restrict(num, m1, m2):
     return num
 # -- Bose Speaker Info and Play playlist
 
-def getBoseInfo(id):
+def getBoseInfo():
     url = "http://192.168.1.157:8090/info"
     info = requests.get(url)
-    print(info)
+    data = info.content
+    parsed_data = xmltodict.parse(data)
+    if parsed_data:
+      return parsed_data['info']['name']
+    else:
+      return None
+
+def getPlayingInfo():
+    url = "http://192.168.1.157:8090/now_playing"
+    info = requests.get(url)
+    data = info.content
+    parsed_data = xmltodict.parse(data)
+    if parsed_data:
+      playing_data = {
+        "playlist_title": parsed_data['nowPlaying']['ContentItem']['itemName'],
+        "track": parsed_data['nowPlaying']['track'],
+        "artist": parsed_data['nowPlaying']['artist'],
+        "album": parsed_data['nowPlaying']['album'],
+        "art": : parsed_data['nowPlaying']['art']
+      }
+      return playing_data
+    else:
+      return None
 
 def sendNotificationToBose(message):
     url = "http://192.168.1.157:8090/speaker"
     appKey = "<app_key>" + secret.BOSE_SECRET + "</app_key>"
-    audioUrl = "<url>https://freesound.org/people/GameAudio/sounds/220212/download/220212__gameaudio__ping-bing.wav</url>"
+    audioUrl = "<url>https://freesound.org/data/previews/275/275571_4486188-hq.mp3</url>"
     service = "<service>What Does Your Weather Sound Like?</service>"
     reason = "<reason>" + message + "</reason>"
-    payload = "<play_info>" + appKey + audioUrl + service + reason + "</play_info>"
-    print(res)
-    
-
+    vol = "<volume>50</volume>"
+    payload = "<play_info>" + appKey + audioUrl + service + reason + vol + "</play_info>"
+    res = requests.post(url, data=payload)
+  
 # -- Navigation for Bose Speaker --
 
 @app.route('/navigate/next', methods=['POST'])
