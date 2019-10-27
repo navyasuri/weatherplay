@@ -3,7 +3,7 @@ import os, json, requests, spotipy, pprint
 import flaskapp.secret as secret
 from operator import attrgetter
 # import utils.(filename)
-import dicttoxml
+import dicttoxml, pyrebase
 
 pp = pprint.PrettyPrinter()
 
@@ -13,8 +13,16 @@ spot = None
 
 positionData = {}
 
+config = secret.FIREBASECONF
+firebase = pyrebase.initialize_app(config)
+
+db = firebase.database()
+
 @app.route('/')
 def show_page():
+    print(db)
+    db.child("login").set({"value":"true"})
+
     return render_template("index.html") 
 
 @app.route('/logged')
