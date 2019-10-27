@@ -83,6 +83,16 @@ def show_another():
 
     return "Hello"
 
+@app.route('/location')
+def getLocation():
+    # Display a page that asks for user location -> once received, redirect to /play
+    return "Good"
+
+@app.route('/play')
+def play():
+    # Use soundtouch API to play the playlist*
+    return "Play"
+
 def get_spotify_token(code):
     url = "https://accounts.spotify.com/api/token"
     payload = {"grant_type": "authorization_code", "code": code, "redirect_uri":"http://localhost:5000/logged", 
@@ -122,6 +132,16 @@ def getBoseInfo(id):
     url = "http://192.168.1.157:8090/info"
     info = requests.get(url)
     print(info)
+
+def sendNotificationToBose(message):
+    url = "http://192.168.1.157:8090/speaker"
+    appKey = "<app_key>" + secret.BOSE_SECRET + "</app_key>"
+    audioUrl = "<url>https://freesound.org/people/GameAudio/sounds/220212/download/220212__gameaudio__ping-bing.wav</url>"
+    service = "<service>What Does Your Weather Sound Like?</service>"
+    reason = "<reason>" + message + "</reason>"
+    payload = "<play_info>" + appKey + audioUrl + service + reason + "</play_info>"
+    res = requests.post(url, data=payload)
+    print(res)
 
 def playPlaylistOnBose(playlistId):
     url = "http://192.168.1.157:8090/select"
