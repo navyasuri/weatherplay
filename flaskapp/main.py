@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template, url_for
 import os, json, requests, spotipy, pprint
 import flaskapp.secret as secret
+from operator import attrgetter
 # import utils.(filename)
 import dicttoxml
 
@@ -31,22 +32,42 @@ def show_another():
     access_token = tokens['access_token']
     spot = spotipy.Spotify(auth=access_token)
     user = spot.me()
+    pp.pprint(user)
     username = user['id']
 
     # use location data to make the weather api call
-    keywords = get_weather_keyword(42.3601, -71.0589)
+    mapwords = get_weather_keyword(42.3601, -71.0589)
 
     # use weather data to create a spotify playlist
     playlist = spot.user_playlist_create(username, 
         user['display_name']+"'s mood playlist", 
         public=False)
 
+    genres = ['pop', 'hip-hop', 'edm', 'rock', 'alternative']
+    rec_params = {
+        "target_tempo": mapwords["cloudCover"],  
+        "target_valence": mapwords["visibility"],  
+        "target_energy": mapwords["temperature"],  
+        "target_danceability": mapwords["windSpeed"],  
+        "target_instrumentalness": mapwords["precipProbability"], 
+        "seed_genres": ",".join(genres), 
+        "limit": 20
+    }
+
+    header= {"Authorization": "Bearer "+str(access_token)}
+    url = "https://api.spotify.com/v1/recommendations"
+    res = requests.get(url, headers=header, params=rec_params)
+    resTracks = res.json()
+    
+    tracks = [d['id'] for d in resTracks['tracks']]
+    print(tracks)
+
+
     playlist_id = playlist['id']
 
     pp.pprint(playlist)
-
     # tracks = []
-    # spot.user_playlist_add_tracks(username, playlist_id)
+    spot.user_playlist_add_tracks(username, playlist_id, tracks)
 
     # store the id of the playlist. use the playlist id to play on speaker
 
@@ -66,14 +87,16 @@ def get_spotify_token(code):
 def get_weather_keyword(lat, lon):
     url = "https://api.darksky.net/forecast/f8e4346a41cff3c66e447fd9bc38c543/42.3601,-71.0589"
     res = requests.get(url)
-    resData = res.json()
+    rd = res.json()
+    pp.pprint(rd)
     keywords = {
-      "timezone": resData['timezone'], # String
-      "summary": resData['currently']['summary'], # String
-      "cloudCover": resData['currently']['cloudCover'], # Float
-      "windSpeed": resData['currently']['windSpeed'], # Float
-      "temperature": resData['currently']['temperature'], # Float
-      "precipIntensity": resData['currently']['precipIntensity'] # Float
+        "timezone": rd['timezone'], # String
+        "summary": rd['currently']['summary'], 
+        "cloudCover": restrict((150*(1-float(rd['currently']['cloudCover'])))+50, 50, 200), 
+        "visibility": weathermap(rd['currently']['visibility'], 0, 10), 
+        "temperature": weathermap(rd['currently']['temperature'], 0, 120), 
+        "precipProbability": float(rd['currently']['precipProbability']), 
+        "windSpeed": weathermap(rd['currently']['windSpeed'], 0, 40)
     }
     print(keywords)
     return keywords
@@ -82,3 +105,12 @@ def playBose(id):
     url = "http://192.168.1.157:8090/"
     info = requests.get(url + "info")
     print(info)
+
+
+def weathermap(actual, m1, m2):
+    return restrict(float(actual), m1, m2)/float(m2-m1)
+    
+def restrict(num, m1, m2):
+    if num<m1: return m1
+    if num>m2: return m2
+    return num
