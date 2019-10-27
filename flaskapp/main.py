@@ -14,7 +14,7 @@ spot = None
 positionData = {}
 
 @app.route('/')
-def show_page(): 
+def show_page():
     return render_template("index.html") 
 
 @app.route('/logged')
@@ -72,7 +72,6 @@ def show_another():
     tracks = [d['id'] for d in resTracks['tracks']]
     print(tracks)
 
-
     playlist_id = playlist['id']
 
     pp.pprint(playlist)
@@ -80,8 +79,8 @@ def show_another():
     spot.user_playlist_add_tracks(username, playlist_id, tracks)
 
     # store the id of the playlist. use the playlist id to play on speaker
+    playPlaylistOnBose(playlist_id)
 
-    # requests.post
     return "Hello"
 
 def get_spotify_token(code):
@@ -131,8 +130,7 @@ def playPlaylistOnBose(playlistId):
     payloadRight = '" sourceAccount="nav_suri" isPresetable="true"></ContentItem>'
     payload = payloadLeft + playlistId + payloadRight
     res = requests.post(url, data=payload)
-    resJson = res.json()
-    print(resJson)
+    print(res)
 
 # -- Navigation for Bose Speaker --
 
