@@ -119,6 +119,9 @@ def getLocation():
         "seed_genres": ",".join(genres), 
         "limit": 20
     }
+    
+    sendNotificationToBose(mapwords['summary'])
+
     pp.pprint(mapwords)
     pp.pprint(rec_params)
 

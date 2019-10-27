@@ -2,7 +2,28 @@ body {
   margin: 0;
   height: 100vh;
   width: 100vw;
-  background: #005f89;
+  background: linear-gradient(180deg, #009ce1, #005f89, #c56100, #ca4900);
+  background-size: 600% 600%;
+
+  -webkit-animation: bgChange 24s ease infinite;
+  -moz-animation: bgChange 24s ease infinite;
+  animation: bgChange 24s ease infinite;
+}
+
+@-webkit-keyframes bgChange {
+  0%{background-position:51% 0%}
+  50%{background-position:50% 100%}
+  100%{background-position:51% 0%}
+}
+@-moz-keyframes bgChange {
+  0%{background-position:51% 0%}
+  50%{background-position:50% 100%}
+  100%{background-position:51% 0%}
+}
+@keyframes bgChange {
+  0%{background-position:51% 0%}
+  50%{background-position:50% 100%}
+  100%{background-position:51% 0%}
 }
 
 .main {

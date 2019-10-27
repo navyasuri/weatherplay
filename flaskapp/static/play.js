@@ -3,7 +3,7 @@ isPlaying = true;
 
 setInterval(() => {
   location.reload();
-}, 15000)
+}, 150000)
 
 function navigateTrack(direction) {
   $.get(
