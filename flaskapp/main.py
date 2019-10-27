@@ -3,7 +3,7 @@ import os, json, requests, spotipy, pprint, time
 import flaskapp.secret as secret
 from operator import attrgetter
 # import utils.(filename)
-import dicttoxml, pyrebase, xmltodict
+import dicttoxml, xmltodict
 
 pp = pprint.PrettyPrinter()
 
@@ -25,7 +25,6 @@ def show_page():
     db.child("login").set({"value":"true"})
 
     # sendNotificationToBose("Hello!")
-    getPlayingInfo()
     return render_template("index.html") 
 
 @app.route('/logged')
