@@ -101,17 +101,11 @@ def show_another():
 def getLocation():
     lat = float(request.args.get("lat"))
     lon = float(request.args.get("lon"))
-    session["lat"] = lat
-    session["lon"] = lon
-    # Display a page that asks for user location -> once received, redirect to /play
-    return redirect(url_for("play"))
 
-@app.route('/play')
-def play():
     # use location data to make the weather api call
     global spot
     user = spot.me()
-    mapwords = get_weather_keyword(session["lat"], session["lon"])
+    mapwords = get_weather_keyword(lat, lon)
     genres = ['pop', 'hip-hop', 'edm', 'rock', 'alternative']
     rec_params = {
         "target_tempo": mapwords["cloudCover"],  
@@ -155,8 +149,8 @@ def play():
     # tracks = []
     spot.user_playlist_add_tracks(user['id'], playlist_id, tracks)
 
-    # store the id of the playlist. use the playlist id to play on speaker
-    # playPlaylistOnBose(playlist_id)
+    session['playlist'] = playlist_id
+
     url = "http://192.168.1.157:8090/select"
     payloadLeft = '<ContentItem source="SPOTIFY" type="uri" location="spotify:playlist:'
     payloadRight = '" sourceAccount="nav_suri" isPresetable="true"></ContentItem>'
@@ -166,11 +160,16 @@ def play():
         # Use soundtouch API to play the playlist*
     except requests.exceptions.Timeout:
         return redirect("https://open.spotify.com/playlist/" + playlist_id)
-    time.sleep(3)
-    boseInfo = getBoseInfo()
-    # playingInfo = getPlayingInfo()
 
+    # store the id of the playlist. use the playlist id to play on speaker
+    # Display a page that asks for user location -> once received, redirect to /play
+    return redirect(url_for("play"))
+
+@app.route('/play')
+def play():
+    time.sleep(2)
     # -----
+    boseInfo = getBoseInfo()
     url = "http://192.168.1.157:8090/now_playing"
     info = requests.get(url)
     data = info.content
@@ -269,29 +268,38 @@ def sendNotificationToBose(message):
   
 # -- Navigation for Bose Speaker --
 
-@app.route('/navigate/next', methods=['POST'])
+@app.route('/navigate/next', methods=['GET'])
 def moveToNextTrack():
-  url = "http://192.168.1.157:8090/key"
-  payloadLeft = '<key state="press" sender="Gabbo">'
-  payloadRight = '</key>'
-  payload = payloadLeft + "PLAY_PAUSE" + payloadRight
-  res = requests.post(url, data=payload)
-  return ''
+  if request.method == 'GET':
+    url = "http://192.168.1.157:8090/key"
+    payloadLeft = '<key state="press" sender="Gabbo">'
+    payloadRight = '</key>'
+    payload = payloadLeft + "NEXT_TRACK" + payloadRight
+    res = requests.post(url, data=payload)
+    return ''
+  else:
+    return None
 
-@app.route('/navigate/prev', methods=['POST'])
+@app.route('/navigate/prev', methods=['GET'])
 def moveToPrevTrack():
-  url = "http://192.168.1.157:8090/key"
-  payloadLeft = '<key state="press" sender="Gabbo">'
-  payloadRight = '</key>'
-  payload = payloadLeft + "PREV_TRACK" + payloadRight
-  res = requests.post(url, data=payload)
-  return ''
+  if request.method == 'GET':
+    url = "http://192.168.1.157:8090/key"
+    payloadLeft = '<key state="press" sender="Gabbo">'
+    payloadRight = '</key>'
+    payload = payloadLeft + "PREV_TRACK" + payloadRight
+    res = requests.post(url, data=payload)
+    return ''
+  else:
+    return None
 
-@app.route('/navigate/play', methods=['POST'])
+@app.route('/navigate/play', methods=['GET'])
 def togglePlay():
-  url = "http://192.168.1.157:8090/key"
-  payloadLeft = '<key state="press" sender="Gabbo">'
-  payloadRight = '</key>'
-  payload = payloadLeft + "NEXT_TRACK" + payloadRight
-  res = requests.post(url, data=payload)
-  return ''
+  if request.method == 'GET':
+    url = "http://192.168.1.157:8090/key"
+    payloadLeft = '<key state="press" sender="Gabbo">'
+    payloadRight = '</key>'
+    payload = payloadLeft + "PLAY_PAUSE" + payloadRight
+    res = requests.post(url, data=payload)
+    return ''
+  else:
+    return None

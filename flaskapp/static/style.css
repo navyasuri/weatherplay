@@ -24,6 +24,13 @@ body {
   font-size: 1.5rem;
   letter-spacing: -0.8px;
 }
+.main__loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+}
 .main__login {
   position: absolute;
   top: 50%;
@@ -105,7 +112,56 @@ body {
 .cloud:nth-child(1){ top: auto; bottom: 120px; opacity: 0.85}
 .cloud:nth-child(2){ right: auto; left: 320px; opacity: 0.5}
 .cloud:nth-child(3){ bottom: auto; top: 120px; right: auto; left: 80px; opacity: 0.75;}
-.cloud:nth-child(4){ bottom: auto; top: 20px; right: auto; left: 320px; opacity: 0.65;}
+.cloud:nth-child(4){ bottom: auto; top: 50px; left: 500px; opacity: 0.65;}
+.cloud:nth-child(5){ bottom: auto; top: 100px; left: 600px; opacity: 0.65;}
+.cloud:nth-child(6){ bottom: auto; top: auto; right: auto; left: 50px; opacity: 0.65;}
+
+.lds-ellipsis {
+  display: inline-block;
+  position: relative;
+  width: 64px;
+  height: 64px;
+}
+.lds-ellipsis div {
+  position: absolute;
+  top: 27px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #fff;
+  animation-timing-function: cubic-bezier(0, 1, 1, 0);
+}
+.lds-ellipsis div:nth-child(1) {
+  left: 6px;
+  animation: lds-ellipsis1 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(2) {
+  left: 6px;
+  animation: lds-ellipsis2 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(3) {
+  left: 26px;
+  animation: lds-ellipsis2 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(4) {
+  left: 45px;
+  animation: lds-ellipsis3 0.6s infinite;
+}
+
+@keyframes lds-ellipsis1 {
+  0% {transform: scale(0);}
+  100% {transform: scale(1);}
+}
+
+@keyframes lds-ellipsis2 {
+  0% {transform: translate(0, 0);}
+  100% {transform: translate(19px, 0);}
+}
+
+@keyframes lds-ellipsis3 {
+  0% {transform: scale(1);}
+  100% {transform: scale(0);}
+}
 
 @keyframes clouds /*Safari and Chrome*/ {
   0% {margin-left:-300px;}

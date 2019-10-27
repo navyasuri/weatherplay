@@ -3,14 +3,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <link rel="stylesheet" href="{{url_for('static', filename='play.css')}}">
   <title>What Does Your Weather Sound Like?</title>
 </head>
 <body>
   <div class="play__container">
     <div class="play__header">
-      <p>{{ boseInfo }}</p>
-      <p>{{ playlist_title }}</p>
+      <p class="play__speaker">Bose {{ boseInfo }}</p>
+      <p class="play__playlist">{{ playlist_title }}</p>
+      <p class="play__albumName">{{ album }}</p>
     </div>
     <div class="play__album">
       <img src="{{ art }}" alt="album-image" class="play__album__image">
@@ -18,8 +21,23 @@
     <div class="play__content">
       <p class="play__content__track">{{ track }}</p>
       <p class="play__content__artist">{{ artist }}</p>
-      <p class="play__content__album">{{ album }}</p>
+    </div>
+    <div class="play__buttonsContainer">
+      <button class="play__button" onclick="navigateTrack('prev')">
+          <span class="glyphicon glyphicon-backward"></span>
+      </button>
+      <button class="play__button btn-play">
+          <span id="playBtn" class="glyphicon glyphicon-pause" onclick="navigateTrack('play')"></span>
+      </button>
+      <button class="play__button" onclick="navigateTrack('next')">
+          <span class="glyphicon glyphicon-forward"></span>
+      </button>
     </div>
   </div>
+  <script
+  src="https://code.jquery.com/jquery-3.4.1.min.js"
+  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+  crossorigin="anonymous"></script>
+  <script src="{{url_for('static', filename='play.js')}}"></script>
 </body>
 </html>
