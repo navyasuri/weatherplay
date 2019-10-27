@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, url_for
+from flask import Flask, request, render_template, url_for, redirect
 import os, json, requests, spotipy, pprint
 import flaskapp.secret as secret
 from operator import attrgetter
@@ -87,7 +87,15 @@ def show_another():
     spot.user_playlist_add_tracks(username, playlist_id, tracks)
 
     # store the id of the playlist. use the playlist id to play on speaker
-    playPlaylistOnBose(playlist_id)
+    # playPlaylistOnBose(playlist_id)
+    url = "http://192.168.1.157:8090/select"
+    payloadLeft = '<ContentItem source="SPOTIFY" type="uri" location="spotify:playlist:'
+    payloadRight = '" sourceAccount="nav_suri" isPresetable="true"></ContentItem>'
+    payload = payloadLeft + playlist_id + payloadRight
+    try:
+      res = requests.post(url, data=payload, timeout=3)
+    except requests.exceptions.Timeout:
+      return redirect("https://open.spotify.com/playlist/" + playlist_id)
 
     return "Hello"
 
@@ -148,16 +156,8 @@ def sendNotificationToBose(message):
     service = "<service>What Does Your Weather Sound Like?</service>"
     reason = "<reason>" + message + "</reason>"
     payload = "<play_info>" + appKey + audioUrl + service + reason + "</play_info>"
-    res = requests.post(url, data=payload)
     print(res)
-
-def playPlaylistOnBose(playlistId):
-    url = "http://192.168.1.157:8090/select"
-    payloadLeft = '<ContentItem source="SPOTIFY" type="uri" location="spotify:playlist:'
-    payloadRight = '" sourceAccount="nav_suri" isPresetable="true"></ContentItem>'
-    payload = payloadLeft + playlistId + payloadRight
-    res = requests.post(url, data=payload)
-    print(res)
+    
 
 # -- Navigation for Bose Speaker --
 
