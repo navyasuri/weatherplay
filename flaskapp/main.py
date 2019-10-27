@@ -28,7 +28,7 @@ def show_another():
     # get the spotify auth related tokens
     access_token = tokens['access_token']
     spot = spotipy.Spotify(auth=access_token)
-    username = spot.me()
+    user = spot.me()
 
     # use location data to make the weather api call
     keywords = get_weather_keyword(42.3601, -71.0589)
