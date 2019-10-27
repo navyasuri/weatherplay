@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template, url_for, redirect, session
-import os, json, requests, spotipy, pprint
+import os, json, requests, spotipy, pprint, time
 import flaskapp.secret as secret
 from operator import attrgetter
 # import utils.(filename)
@@ -24,7 +24,8 @@ def show_page():
     print(db)
     db.child("login").set({"value":"true"})
 
-    sendNotificationToBose("Hello!")
+    # sendNotificationToBose("Hello!")
+    getPlayingInfo()
     return render_template("index.html") 
 
 @app.route('/logged')
@@ -175,14 +176,13 @@ def play():
     payload = payloadLeft + playlist_id + payloadRight
     try:
         res = requests.post(url, data=payload, timeout=3)
+        # Use soundtouch API to play the playlist*
     except requests.exceptions.Timeout:
         return redirect("https://open.spotify.com/playlist/" + playlist_id)
-
-
-    # Use soundtouch API to play the playlist*
+    time.sleep(3)
     boseInfo = getBoseInfo()
     playingInfo = getPlayingInfo()
-    
+
     return render_template("play.html", boseInfo=boseInfo, playingInfo=playingInfo) 
 
 def get_spotify_token(code):
@@ -241,8 +241,9 @@ def getPlayingInfo():
         "track": parsed_data['nowPlaying']['track'],
         "artist": parsed_data['nowPlaying']['artist'],
         "album": parsed_data['nowPlaying']['album'],
-        "art": : parsed_data['nowPlaying']['art']
+        "art": parsed_data['nowPlaying']['art']['#text']
       }
+      print(playing_data)
       return playing_data
     else:
       return None
