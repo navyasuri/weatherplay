@@ -20,11 +20,12 @@ def show_page():
 def show_another():
     global spot
     # get the auth portion of url
+    url = request.url
     code = request.args['code']
     print("spotify code", code)
 
     # make a post to spotify auth
-    tokens = get_spotify_token(code)
+    tokens = get_spotify_token(code, url)
 
     # get the spotify auth related tokens
     access_token = tokens['access_token']
@@ -194,9 +195,9 @@ def play():
         art=art
     ) 
 
-def get_spotify_token(code):
+def get_spotify_token(code, url):
     url = "https://accounts.spotify.com/api/token"
-    payload = {"grant_type": "authorization_code", "code": code, "redirect_uri":"http://localhost:5000/logged", 
+    payload = {"grant_type": "authorization_code", "code": code, "redirect_uri":url, 
         "client_id": secret.CLIENT, 
         "client_secret": secret.CLIENT_SECRET}
     res = requests.post(url, data=payload)
