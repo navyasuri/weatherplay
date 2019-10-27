@@ -38,6 +38,16 @@ def show_another():
     # use location data to make the weather api call
     mapwords = get_weather_keyword(42.3601, -71.0589)
 
+    playlist_name = user['display_name'].split()[0]+"'s weather playlist"
+    userplay = spot.current_user_playlists()
+    exister = None
+    for d in userplay['items']:
+        if d['name']==playlist_name:
+            exister = d['id']
+            break
+    if exister:
+        spot.user_playlist_unfollow(username, playlist_name)
+
     # use weather data to create a spotify playlist
     playlist = spot.user_playlist_create(username, 
         user['display_name']+"'s mood playlist", 
