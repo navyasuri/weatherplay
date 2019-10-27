@@ -12,20 +12,8 @@ app.secret_key = secret.FLASK_SECRET
 
 spot = None
 
-positionData = {}
-
-config = secret.FIREBASECONF
-firebase = pyrebase.initialize_app(config)
-
-db = firebase.database()
-
 @app.route('/')
 def show_page():
-    print(db)
-    db.child("login").set({"value":"true"})
-
-    # sendNotificationToBose("Hello!")
-    getPlayingInfo()
     return render_template("index.html") 
 
 @app.route('/logged')
@@ -46,7 +34,6 @@ def show_another():
     pp.pprint(user)
     username = user['id']
 
-    db.child("user").set({"me": user})
     session["user"] = username
 
     print(session)
@@ -175,15 +162,37 @@ def play():
     payloadRight = '" sourceAccount="nav_suri" isPresetable="true"></ContentItem>'
     payload = payloadLeft + playlist_id + payloadRight
     try:
-        res = requests.post(url, data=payload, timeout=3)
+        res = requests.post(url, data=payload, timeout=1)
         # Use soundtouch API to play the playlist*
     except requests.exceptions.Timeout:
         return redirect("https://open.spotify.com/playlist/" + playlist_id)
     time.sleep(3)
     boseInfo = getBoseInfo()
-    playingInfo = getPlayingInfo()
+    # playingInfo = getPlayingInfo()
 
-    return render_template("play.html", boseInfo=boseInfo, playingInfo=playingInfo) 
+    # -----
+    url = "http://192.168.1.157:8090/now_playing"
+    info = requests.get(url)
+    data = info.content
+    parsed_data = xmltodict.parse(data)
+    # Variables for Music Info
+    playlist_title = parsed_data['nowPlaying']['ContentItem']['itemName'],
+    track = parsed_data['nowPlaying']['track'],
+    artist = parsed_data['nowPlaying']['artist'],
+    album = parsed_data['nowPlaying']['album'],
+    art = parsed_data['nowPlaying']['art']['#text']
+    # -----
+
+    print(str(playlist_title)[2:-3])
+
+    return render_template("play.html", 
+        boseInfo=boseInfo,
+        playlist_title=str(playlist_title)[2:-3],
+        track=str(track)[2:-3],
+        artist=str(artist)[2:-3],
+        album=str(album)[2:-3],
+        art=art
+    ) 
 
 def get_spotify_token(code):
     url = "https://accounts.spotify.com/api/token"
@@ -237,11 +246,11 @@ def getPlayingInfo():
     parsed_data = xmltodict.parse(data)
     if parsed_data:
       playing_data = {
-        "playlist_title": parsed_data['nowPlaying']['ContentItem']['itemName'],
-        "track": parsed_data['nowPlaying']['track'],
-        "artist": parsed_data['nowPlaying']['artist'],
-        "album": parsed_data['nowPlaying']['album'],
-        "art": parsed_data['nowPlaying']['art']['#text']
+        "playlist_title": str(parsed_data['nowPlaying']['ContentItem']['itemName']),
+        "track": str(parsed_data['nowPlaying']['track']),
+        "artist": str(parsed_data['nowPlaying']['artist']),
+        "album": str(parsed_data['nowPlaying']['album']),
+        "art": str(parsed_data['nowPlaying']['art']['#text'])
       }
       print(playing_data)
       return playing_data

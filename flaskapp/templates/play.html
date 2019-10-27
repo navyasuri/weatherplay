@@ -7,11 +7,19 @@
   <title>What Does Your Weather Sound Like?</title>
 </head>
 <body>
-  <h1>{{ boseInfo }}</h1>
-  <p><{{ playingInfo['playlist_title'] }}</p>
-  <p><{{ playingInfo['track'] }}</p>
-  <p><{{ playingInfo['artist'] }}</p>
-  <p><{{ playingInfo['album'] }}</p>
-  <img src="{{ playingInfo['art'] }}" alt="album-image">
+  <div class="play__container">
+    <div class="play__header">
+      <p>{{ boseInfo }}</p>
+      <p>{{ playlist_title }}</p>
+    </div>
+    <div class="play__album">
+      <img src="{{ art }}" alt="album-image" class="play__album__image">
+    </div>
+    <div class="play__content">
+      <p class="play__content__track">{{ track }}</p>
+      <p class="play__content__artist">{{ artist }}</p>
+      <p class="play__content__album">{{ album }}</p>
+    </div>
+  </div>
 </body>
 </html>
