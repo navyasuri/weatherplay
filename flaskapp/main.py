@@ -46,7 +46,7 @@ def show_another():
             break
     if exister:
         print("exists")
-        spot.user_playlist_unfollow(username, playlist_name)
+        spot.user_playlist_unfollow(username, exister)
 
     # use weather data to create a spotify playlist
     playlist = spot.user_playlist_create(username, 

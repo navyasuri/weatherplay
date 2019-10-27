@@ -1,0 +1,114 @@
+body {
+  margin: 0;
+  height: 100vh;
+  width: 100vw;
+  background: #005f89;
+}
+
+.main {
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+}
+.main__container {
+  display: flex;
+  align-items: center;
+  width: 80%;
+  position: absolute;
+  top: 16px;
+  left: 5%;
+}
+.main__title {
+  font-family: 'Source Sans Pro', sans-serif;
+  color: #e6eceb;
+  font-size: 1.5rem;
+  letter-spacing: -0.8px;
+}
+.main__login {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  background: #5ccb41;
+  color: white;
+  font-size: 1.2rem;
+  border: none;
+  padding: 12px 32px;
+  border-radius: 35px;
+  border: 4px solid #78d662;
+  cursor: pointer;
+  font-family: 'Source Sans Pro', sans-serif;
+  outline: none;
+}
+
+.main__logo {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  width: 200px;
+}
+
+@media screen and (max-width: 480px){
+    .main__login {
+      font-size: 1rem;
+    }
+    .main__title {
+      font-size: 0.8rem;
+      letter-spacing: 0;
+    }
+    .main__hr {
+      height: 1px;
+      border: 2px;
+    }
+}
+
+.cloud-container {
+  position: absolute;
+  margin: auto;
+  top:20%;
+  bottom:0;
+  left:30%;
+  right:0;
+}
+
+.cloud {
+  z-index: -1;
+  margin: auto;
+  position: absolute;
+  top:0;
+  bottom:0;
+  left:0;
+  right:0;
+  background: #e6eceb;
+  width: 90px;
+  height: 42px; 
+  animation: clouds 40s ease-in-out infinite;
+  -webkit-animation: clouds 40s ease-in-out infinite;
+  margin-left: 0;
+}
+
+.cloud:before {
+  border-radius: 50%;
+  box-shadow: 20px -20px 0 0 #e6eceb,
+              90px 0 0 0 #e6eceb,
+              60px -27px 0 8px #e6eceb;
+  content: "";
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  left: -22px;
+  bottom: 0;
+  background: #e6eceb;
+}
+
+.cloud:nth-child(1){ top: auto; bottom: 120px; opacity: 0.85}
+.cloud:nth-child(2){ right: auto; left: 320px; opacity: 0.5}
+.cloud:nth-child(3){ bottom: auto; top: 120px; right: auto; left: 80px; opacity: 0.75;}
+.cloud:nth-child(4){ bottom: auto; top: 20px; right: auto; left: 320px; opacity: 0.65;}
+
+@keyframes clouds /*Safari and Chrome*/ {
+  0% {margin-left:-300px;}
+  50% {margin-left:300px;}
+  100% {margin-left: -300px;}
+}
