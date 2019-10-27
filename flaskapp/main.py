@@ -3,7 +3,7 @@ import os, json, requests, spotipy, pprint, time
 import flaskapp.secret as secret
 from operator import attrgetter
 # import utils.(filename)
-import dicttoxml, pyrebase, xmltodict
+import dicttoxml, xmltodict
 
 pp = pprint.PrettyPrinter()
 
