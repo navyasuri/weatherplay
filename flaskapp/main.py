@@ -27,7 +27,6 @@ def show_another():
     # make a post to spotify auth
     tokens = get_spotify_token(code)
 
-
     # get the spotify auth related tokens
     access_token = tokens['access_token']
     spot = spotipy.Spotify(auth=access_token)
@@ -46,11 +45,12 @@ def show_another():
             exister = d['id']
             break
     if exister:
+        print("exists")
         spot.user_playlist_unfollow(username, playlist_name)
 
     # use weather data to create a spotify playlist
     playlist = spot.user_playlist_create(username, 
-        user['display_name']+"'s mood playlist", 
+        playlist_name, 
         public=False)
 
     genres = ['pop', 'hip-hop', 'edm', 'rock', 'alternative']
@@ -97,7 +97,6 @@ def get_weather_keyword(lat, lon):
     url = "https://api.darksky.net/forecast/f8e4346a41cff3c66e447fd9bc38c543/42.3601,-71.0589"
     res = requests.get(url)
     rd = res.json()
-    pp.pprint(rd)
     keywords = {
         "timezone": rd['timezone'], # String
         "summary": rd['currently']['summary'], 
