@@ -1,8 +1,10 @@
 from flask import Flask, request, render_template, url_for
-import os, json, requests, spotipy
+import os, json, requests, spotipy, pprint
 import flaskapp.secret as secret
 # import utils.(filename)
 import dicttoxml
+
+pp = pprint.PrettyPrinter()
 
 app = Flask(__name__)
 
@@ -29,15 +31,25 @@ def show_another():
     access_token = tokens['access_token']
     spot = spotipy.Spotify(auth=access_token)
     user = spot.me()
+    username = user['id']
 
     # use location data to make the weather api call
     keywords = get_weather_keyword(42.3601, -71.0589)
 
     # use weather data to create a spotify playlist
+    playlist = spot.user_playlist_create(username, 
+        user['display_name']+"'s mood playlist", 
+        public=False)
 
-    
+    playlist_id = playlist['id']
+
+    pp.pprint(playlist)
+
+    # tracks = []
+    # spot.user_playlist_add_tracks(username, playlist_id)
+
     # store the id of the playlist. use the playlist id to play on speaker
-    playlist_id = ""
+
     # requests.post
     return "Hello"
 
