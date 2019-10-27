@@ -78,7 +78,47 @@ def get_weather_keyword(lat, lon):
     print(keywords)
     return keywords
 
-def playBose(id):
-    url = "http://192.168.1.157:8090/"
-    info = requests.get(url + "info")
+# -- Bose Speaker Info and Play playlist
+
+def getBoseInfo(id):
+    url = "http://192.168.1.157:8090/info"
+    info = requests.get(url)
     print(info)
+
+def playPlaylistOnBose(playlistId):
+    url = "http://192.168.1.157:8090/select"
+    payloadLeft = '<ContentItem source="SPOTIFY" type="uri" location="spotify:playlist:'
+    payloadRight = '" sourceAccount="nav_suri" isPresetable="true"></ContentItem>'
+    payload = payloadLeft + playlistId + payloadRight
+    res = requests.post(url, data=payload)
+    resJson = res.json()
+    print(resJson)
+
+# -- Navigation for Bose Speaker --
+
+@app.route('/navigate/next', methods=['POST'])
+def moveToNextTrack():
+  url = "http://192.168.1.157:8090/key"
+  payloadLeft = '<key state="press" sender="Gabbo">'
+  payloadRight = '</key>'
+  payload = payloadLeft + "PLAY_PAUSE" + payloadRight
+  res = requests.post(url, data=payload)
+  return ''
+
+@app.route('/navigate/prev', methods=['POST'])
+def moveToPrevTrack():
+  url = "http://192.168.1.157:8090/key"
+  payloadLeft = '<key state="press" sender="Gabbo">'
+  payloadRight = '</key>'
+  payload = payloadLeft + "PREV_TRACK" + payloadRight
+  res = requests.post(url, data=payload)
+  return ''
+
+@app.route('/navigate/play', methods=['POST'])
+def togglePlay():
+  url = "http://192.168.1.157:8090/key"
+  payloadLeft = '<key state="press" sender="Gabbo">'
+  payloadRight = '</key>'
+  payload = payloadLeft + "NEXT_TRACK" + payloadRight
+  res = requests.post(url, data=payload)
+  return ''
