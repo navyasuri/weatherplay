@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, url_for, redirect, session
+from flask import Flask, request, render_template, url_for, redirect, session, send_from_directory
 import os, json, requests, spotipy, pprint, time
 import flaskapp.secret as secret
 from operator import attrgetter
@@ -11,6 +11,11 @@ app = Flask(__name__)
 app.secret_key = secret.FLASK_SECRET
 
 spot = None
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+      'favicon.ico')
 
 @app.route('/')
 def show_page():
@@ -119,7 +124,7 @@ def getLocation():
         "seed_genres": ",".join(genres), 
         "limit": 20
     }
-    
+
     sendNotificationToBose(mapwords['summary'])
 
     pp.pprint(mapwords)
@@ -210,8 +215,10 @@ def get_spotify_token(code, redirect_url):
     return resjson
 
 def get_weather_keyword(lat, lon):
-    url = "https://api.darksky.net/forecast/f8e4346a41cff3c66e447fd9bc38c543/42.3601,-71.0589"
-    res = requests.get(url)
+    url = "https://api.darksky.net/forecast/"
+    key = secret.DARKSKY_SECRET
+    location = "/42.3601,-71.0589"
+    res = requests.get(url + key + location)
     rd = res.json()
     keywords = {
         "timezone": rd['timezone'], # String
